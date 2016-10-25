@@ -1,0 +1,54 @@
+# Contributor: James Pic <jpic@yourlabs.org>
+# Maintainer: James Pic <jpic@yourlabs.org>
+pkgname=py-pylibmc
+_pkgname=pylibmc
+pkgver=1.5.1
+pkgrel=0
+pkgdesc="PyLibMc bindings for Python 2"
+url="https://pypi.python.org/pypi/pylibmc"
+arch="noarch"
+license="BSD3"
+depends=""
+depends_dev="libmemcached-dev python-dev python3-dev cyrus-sasl-dev zlib-dev"
+makedepends="$depends_dev"
+install=""
+subpackages="py2-${pkgname#py-}:_py2 py3-${pkgname#py-}:_py3"
+source="https://files.pythonhosted.org/packages/source/${_pkgname:0:1}/$_pkgname/$_pkgname-$pkgver.tar.gz"
+
+builddir="$srcdir/$_pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+
+	python2 setup.py build || return 1
+	python3 setup.py build
+}
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+_py2() {
+	replaces="$pkgname"
+	depends="py-egenix-mx-base"
+	_py python2
+}
+
+_py3() {
+	_py python3
+}
+
+_py() {
+	local python="$1"
+	pkgdesc="$pkgdesc (for $python)"
+	arch="all"
+	install_if="$pkgname=$pkgver-r$pkgrel $python"
+
+	cd "$builddir"
+	$python setup.py install --prefix=/usr --root="$subpkgdir"
+}
+
+md5sums="9077704e34afc8b6c7b0b686ae9579de  pylibmc-1.5.1.tar.gz"
+sha256sums="ecba261859c3e1ba3365389cb4f4dfffb7e02120a9f57a288cacf2f42c45cdd6  pylibmc-1.5.1.tar.gz"
+sha512sums="10c8a8aed676efe703047baae928d2d64b6ee7411225e3407ff3dd7c19d087b66b18a94993eab77a433fd20f896714fe4415858ea79e393e99ed06b76cd1385b  pylibmc-1.5.1.tar.gz"
+
